@@ -1,0 +1,17 @@
+div.leaflet-pane {
+  z-index: 1;
+}
+
+div.leaflet-control {
+  z-index: 10;
+}
+div.leaflet-top,
+div.leaflet-bottom {
+  z-index: 10;
+}
+
+/* Radix UI Theme customization */
+[data-radix-theme] {
+  --background-color: #1f2937; /* dark grey color */
+  background-color: var(--background-color);
+}
