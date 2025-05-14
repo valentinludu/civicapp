@@ -1,6 +1,6 @@
 # Anima Project
 
-A React project migrated from Vite to Next.js.
+A modern complaint management application built with Next.js and React.
 
 ## Getting Started
 
@@ -16,27 +16,32 @@ Then, run the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## About the Migration
-
-This project has been migrated from Vite to Next.js. The main changes include:
-
-- Replacing React Router with Next.js App Router
-- Using Next.js page structure for routes
-- Converting client-side state routing to use localStorage for passing data between pages
-- Configuring Next.js, PostCSS, and Tailwind appropriately
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
 ## Project Structure
 
-- `src/app/` - Next.js app directory with page routes
-- `src/components/` - UI components
-- `src/screens/` - Main screen components (kept for compatibility)
+- `src/app/` - Next.js app directory with routes including complaint and complaint-summary
+- `src/components/` - UI components organized by feature and functionality
+- `src/lib/` - Utility functions and shared libraries
 - `public/` - Static assets
 
-## Built With
+## Features
 
-- Next.js
-- React
-- TailwindCSS
-- ShadCN UI components
+- Interactive complaint submission process
+- Location picking with Leaflet maps integration
+- Complaint summary and review functionality
+- Modern responsive UI built with Tailwind CSS and Radix UI
+
+## Technologies
+
+- **Framework**: Next.js 15.3.1
+- **UI Library**: React 19.1.0
+- **Styling**: Tailwind CSS 3.4.16
+- **UI Components**: Radix UI
+- **Form Handling**: React Hook Form with Zod validation
+- **Maps**: Leaflet and React Leaflet
+- **Typings**: TypeScript 5.8.3
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
