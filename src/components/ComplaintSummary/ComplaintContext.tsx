@@ -1,11 +1,11 @@
 "use client";
 
-import { FormData, schema } from "@/components/Complaint/home.schema";
+import { ComplaintFormData } from "@/components/Complaint/home.schema";
 import { createContext, ReactNode, useContext } from "react";
 
 type ComplaintContextType = {
-  formData: FormData;
-  setFormData: (formData: FormData) => void;
+  formData: ComplaintFormData;
+  setFormData: (formData: ComplaintFormData) => void;
 };
 
 export function ComplaintContextProvider({

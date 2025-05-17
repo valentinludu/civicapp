@@ -6,10 +6,15 @@ export const schema = z.object({
   address: z.string().min(5),
   phone: z.string().optional(),
   residenceAddress: z.string().min(5),
-  photos: z.array(z.string()),
+  photos: z.array(
+    z.object({
+      url: z.string(),
+      id: z.string(),
+    })
+  ),
   institutionEmail: z.string().optional(),
   writtenEmail: z.string().optional(),
   subject: z.string().optional(),
 });
 
-export type FormData = z.infer<typeof schema>;
+export type ComplaintFormData = z.infer<typeof schema>;

@@ -8,7 +8,7 @@ import { MapPinIcon, LocateFixed } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { MapComponent } from "./MapComponent";
-import { FormData } from "./home.schema";
+import { ComplaintFormData } from "./home.schema";
 import { Input } from "../ui/input";
 
 export function MapSection() {
@@ -19,7 +19,7 @@ export function MapSection() {
     register,
     setValue,
     formState: { errors, isValid },
-  } = useFormContext<FormData>();
+  } = useFormContext<ComplaintFormData>();
 
   const onPositionUpdate = () => {
     if (!("getCurrentPosition" in window.navigator.geolocation)) {

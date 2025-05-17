@@ -1,3 +1,4 @@
+import { logger } from "./logger";
 import { openai } from "./openAiClient";
 
 interface ChatMessage {
@@ -19,9 +20,7 @@ When providing content with links, do it simple as text.
 ==========
 `.trim();
 
-export async function handleMessage(
-  message: string
-): Promise<{
+export async function handleMessage(message: string): Promise<{
   email: string;
   message: string;
   subject: string;
@@ -51,7 +50,7 @@ export async function handleMessage(
 
     return JSON.parse(responseJson);
   } catch (error) {
-    console.error("Error in handleMessage:", error);
+    logger.error("Error in handleMessage:", error);
     return null;
   }
 }

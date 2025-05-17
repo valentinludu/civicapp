@@ -1,3 +1,4 @@
+import { schema } from "@/components/Complaint/home.schema";
 import { handleMessage } from "@/lib/agent";
 import { emails } from "@/lib/emails";
 
@@ -7,9 +8,14 @@ const createMessage = (
   address: string,
   description: string,
   sectorNo: string,
+  photos: { id: string; url: string }[],
   phone?: string
 ) => {
   const institution = emails[sectorNo];
+  const photosString = photos
+    .filter((photo) => !!photo.url)
+    .map((photo) => photo.url)
+    .join("\n");
   return `
     Esti un asistent de scrisori care poate ajuta oamenii cu problemele lor, scriind plangeri pentru primarie.
     Vei returna in format JSON urmatoarele date:
@@ -32,10 +38,7 @@ const createMessage = (
     adresaProblemei: ${address}
     descriereaProblemei: ${description}
     phone: ${phone} (doar daca exista)
-    
-    Daca telefonul nu exista, nu il adauga la finalul mesajului.
-
-    Daca adresa de domiciliu nu exista, nu o adaugi la finalul mesajului.
+  
 
     Daca problema nu este valida, seteaza variabila valid ca fiind false si message ca fiind "Problema nu este valida", si ignora formatul mesajului. Problemele sunt valide doar daca sunt legate de primaria de sector a Bucurestiului.
 
@@ -49,18 +52,27 @@ const createMessage = (
 
     Vă rog să inițiați demersurile necesare pentru [Actiunea pe care ne dorim sa o ia primaria]
 
+    ${
+      !!photosString.trim()
+        ? `Am atasat cateva imagini cu problema: \n ${photosString}`
+        : ""
+    }
+
     Aștept un răspuns cu numărul de înregistrare al sesizării. 
 
     Multumesc!
-    Nume: [nume]
-    Adresa de domiciliu:[adresaDeAcasa]
-    Telefon: [phone]
+    Nume: ${name}
+    ${residenceAddress ? "Adresa de domiciliu: " + residenceAddress : ""}
+    ${phone ? "Telefon: " + phone : ""}
     `;
 };
 
 export async function POST(req: Request) {
-  const { description, fullName, address, phone, residenceAddress } =
-    await req.json();
+  const body = await req.json();
+  const data = schema.parse(body);
+
+  const { description, fullName, address, phone, residenceAddress, photos } =
+    data;
 
   const sector = address.split(",").at(-1)?.trim();
   const sectorNo = sector?.split(" ").at(1);
@@ -78,6 +90,7 @@ export async function POST(req: Request) {
       address,
       description,
       sectorNo,
+      photos,
       phone
     )
   );

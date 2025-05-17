@@ -5,7 +5,7 @@ import useSWRMutation from "swr/mutation";
 
 import { StickyFooter } from "../layout/StickyFooter";
 import { useFormContext } from "react-hook-form";
-import { FormData } from "./home.schema";
+import { ComplaintFormData } from "./home.schema";
 import { POST } from "@/lib/fetch";
 
 export function ComplaintStickyFooter() {
@@ -15,14 +15,14 @@ export function ComplaintStickyFooter() {
     { message: string; email: string; subject: string },
     Error,
     string,
-    FormData
+    ComplaintFormData
   >("/api/ai-complaint", POST);
 
   const {
     setValue,
     handleSubmit,
     formState: { isValid, errors },
-  } = useFormContext<FormData>();
+  } = useFormContext<ComplaintFormData>();
 
   async function handleSubmitData() {
     handleSubmit(

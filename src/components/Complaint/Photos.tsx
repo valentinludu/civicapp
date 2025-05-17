@@ -1,36 +1,70 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { Trash2Icon, ExpandIcon, XIcon, CameraIcon } from "lucide-react";
-import { Card } from "../ui/card";
-
 import Webcam from "react-webcam";
 import { useFormContext } from "react-hook-form";
-import { FormData } from "./home.schema";
+import { Trash2Icon, ExpandIcon, XIcon, CameraIcon } from "lucide-react";
+import useSWRMutation from "swr/mutation";
+
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
+import { ComplaintFormData } from "./home.schema";
+import { DELETE, POSTFORM } from "@/lib/fetch";
 
 export function Photos() {
   const webcamRef = useRef<Webcam>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const { setValue, watch } = useFormContext<FormData>();
-  const photos = watch("photos");
-  const currentPhotoIndex = photos.filter(Boolean).length;
+  const { setValue, watch } = useFormContext<ComplaintFormData>();
+  const { trigger: uploadPhoto, isMutating: isLoadingUpload } = useSWRMutation<
+    { url: string; id: string },
+    Error,
+    string,
+    FormData
+  >("/api/upload", POSTFORM);
 
-  const capturePhoto = () => {
+  const { trigger: deletePhoto, isMutating: isLoadingDelete } = useSWRMutation<
+    { url: string; id: string },
+    Error,
+    string,
+    { id: string }
+  >("/api/upload", DELETE);
+
+  const photos = watch("photos");
+
+  const currentPhotoIndex = photos.filter((photo) => !!photo.url).length;
+
+  const capturePhoto = async () => {
     if (webcamRef.current) {
       const photo = webcamRef.current.getScreenshot();
+
       if (photo && currentPhotoIndex < 4) {
+        const data = new FormData();
+
+        const buffer = await fetch(photo)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const file = new File([blob], "image.jpeg", { type: "image/jpeg" });
+            return file;
+          });
+
+        data.append("file", buffer);
+
+        const response = await uploadPhoto(data);
         const newPhotos = [...photos];
-        newPhotos[currentPhotoIndex] = photo;
+        newPhotos[currentPhotoIndex] = response;
         setValue("photos", newPhotos);
       }
     }
   };
 
-  const deletePhoto = (index: number) => {
+  const removePhoto = async (index: number) => {
+    const photoToDelete = photos[index];
+    if (photoToDelete?.id) {
+      await deletePhoto({ id: photoToDelete.id });
+    }
     let newPhotos = [...photos];
     newPhotos.splice(index, 1);
-    newPhotos = [...newPhotos, ""];
+    newPhotos = [...newPhotos, { id: "", url: "" }];
     setValue("photos", newPhotos);
     setSelectedPhoto(null);
   };
@@ -48,7 +82,9 @@ export function Photos() {
         <Button
           onClick={capturePhoto}
           size="lg"
-          disabled={currentPhotoIndex >= 4}
+          disabled={
+            isLoadingUpload || isLoadingDelete || currentPhotoIndex >= 4
+          }
           className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-teal-700 shadow-lg"
         >
           <span className="sr-only">Take photo</span>
@@ -60,9 +96,9 @@ export function Photos() {
         {photos.map((photo, index) => (
           <div key={index} className="relative">
             <Card className="aspect-square rounded-lg overflow-hidden">
-              {photo ? (
+              {photo?.url ? (
                 <img
-                  src={photo}
+                  src={photo.url}
                   alt={`Captured photo ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -70,13 +106,13 @@ export function Photos() {
                 <div className="w-full h-full bg-gray-100" />
               )}
             </Card>
-            {photo && (
+            {photo?.url && (
               <div className="absolute top-1 right-1 flex gap-1">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 bg-black/50 hover:bg-black/70"
-                  onClick={() => setSelectedPhoto(photo)}
+                  onClick={() => setSelectedPhoto(photo.id)}
                 >
                   <ExpandIcon className="h-4 w-4 text-white" />
                 </Button>
@@ -84,7 +120,7 @@ export function Photos() {
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 bg-black/50 hover:bg-black/70"
-                  onClick={() => deletePhoto(index)}
+                  onClick={() => removePhoto(index)}
                 >
                   <Trash2Icon className="h-4 w-4 text-white" />
                 </Button>
@@ -98,7 +134,7 @@ export function Photos() {
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
           <div className="relative w-full max-w-lg">
             <img
-              src={selectedPhoto}
+              src={photos.find((photo) => photo.id === selectedPhoto)?.url}
               alt="Selected capture"
               className="w-full rounded-lg"
             />

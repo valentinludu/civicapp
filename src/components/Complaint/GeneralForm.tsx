@@ -2,7 +2,7 @@
 
 import * as Form from "@radix-ui/react-form";
 import { useFormContext } from "react-hook-form";
-import { FormData } from "@/components/Complaint/home.schema";
+import { ComplaintFormData } from "@/components/Complaint/home.schema";
 
 import { Input } from "../ui/input";
 
@@ -10,7 +10,7 @@ export function GeneralForm() {
   const {
     register,
     formState: { errors },
-  } = useFormContext<FormData>();
+  } = useFormContext<ComplaintFormData>();
 
   return (
     <Form.Root>
