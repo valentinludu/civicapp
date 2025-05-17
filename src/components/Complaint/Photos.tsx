@@ -82,6 +82,7 @@ export function Photos() {
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
+          videoConstraints={{ facingMode: "environment" }}
           className="w-full h-full object-cover"
         />
 
