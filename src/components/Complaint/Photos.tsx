@@ -3,7 +3,13 @@
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { useFormContext } from "react-hook-form";
-import { Trash2Icon, ExpandIcon, XIcon, CameraIcon } from "lucide-react";
+import {
+  Trash2Icon,
+  ExpandIcon,
+  XIcon,
+  CameraIcon,
+  Loader2Icon,
+} from "lucide-react";
 import useSWRMutation from "swr/mutation";
 
 import { Button } from "../ui/button";
@@ -88,7 +94,14 @@ export function Photos() {
           className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-teal-700 shadow-lg"
         >
           <span className="sr-only">Take photo</span>
-          <CameraIcon style={{ fontSize: 40, width: 30, height: 30 }} />
+          {isLoadingUpload ? (
+            <Loader2Icon
+              style={{ fontSize: 40, width: 30, height: 30 }}
+              className="text-white animate-spin"
+            />
+          ) : (
+            <CameraIcon style={{ fontSize: 40, width: 30, height: 30 }} />
+          )}
         </Button>
       </div>
 
